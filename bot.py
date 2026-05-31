@@ -2,8 +2,8 @@ from playwright.sync_api import sync_playwright
 import requests
 import os
 
-TOKEN = "8773137514:AAE2OErgd51oEL1h7Ug7wBeKPO38Q4RcRHI"
-CHAT_ID = "@padeltournoisfrance"
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 mots_cles = ["P25", "P100", "P250", "P500", "P1000"]
 
@@ -11,6 +11,7 @@ mots_interdits = [
     "licence",
     "tutos",
     "championnat",
+    "championnats",
     "chpts",
     "terrain",
     "club",
@@ -26,11 +27,20 @@ with sync_playwright() as p:
 
     page = browser.new_page()
 
-    page.goto("https://tenup.fft.fr/recherche/tournois?pratique=PADEL")
+    page.goto(
+        "https://tenup.fft.fr/recherche/tournois?pratique=PADEL",
+        wait_until="networkidle"
+    )
 
-    page.wait_for_timeout(8000)
+    page.wait_for_timeout(5000)
 
     textes = page.locator("body").inner_text()
+
+    # ===== AJOUT POUR LES LOGS =====
+    print("===== DEBUT CONTENU TENUP =====")
+    print(textes[:5000])
+    print("===== FIN CONTENU TENUP =====")
+    # ===============================
 
     browser.close()
 
@@ -38,27 +48,31 @@ lignes = textes.split("\n")
 
 for ligne in lignes:
 
+    ligne = ligne.strip()
+
     for mot in mots_cles:
 
         if (
             mot in ligne
             and len(ligne) < 120
-            and not any(interdit.lower() in ligne.lower() for interdit in mots_interdits)
+            and not any(
+                interdit.lower() in ligne.lower()
+                for interdit in mots_interdits
+            )
         ):
 
             tournois_detectes.append(ligne)
 
-# Supprime doublons
+# Suppression des doublons
 tournois_detectes = list(dict.fromkeys(tournois_detectes))
 
-# Fichier mémoire
 fichier = "tournois.txt"
 
 anciens_tournois = []
 
 if os.path.exists(fichier):
 
-    with open(fichier, "r") as f:
+    with open(fichier, "r", encoding="utf-8") as f:
 
         anciens_tournois = f.read().splitlines()
 
@@ -70,14 +84,14 @@ for tournoi in tournois_detectes:
 
         nouveaux_tournois.append(tournoi)
 
-# Sauvegarde nouveaux résultats
-with open(fichier, "w") as f:
+# Sauvegarde mémoire
+with open(fichier, "w", encoding="utf-8") as f:
 
     for tournoi in tournois_detectes:
 
         f.write(tournoi + "\n")
 
-# Envoi Telegram
+# Message Telegram
 if nouveaux_tournois:
 
     message = "🎾 NOUVEAUX TOURNOIS DÉTECTÉS\n\n"
@@ -92,11 +106,12 @@ else:
 
 telegram_url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
-data = {
-    "chat_id": CHAT_ID,
-    "text": message
-}
-
-requests.post(telegram_url, data=data)
+requests.post(
+    telegram_url,
+    data={
+        "chat_id": CHAT_ID,
+        "text": message
+    }
+)
 
 print(message)
