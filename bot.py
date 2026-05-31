@@ -36,11 +36,9 @@ with sync_playwright() as p:
 
     textes = page.locator("body").inner_text()
 
-    # ===== AJOUT POUR LES LOGS =====
     print("===== DEBUT CONTENU TENUP =====")
     print(textes[:5000])
     print("===== FIN CONTENU TENUP =====")
-    # ===============================
 
     browser.close()
 
@@ -63,7 +61,6 @@ for ligne in lignes:
 
             tournois_detectes.append(ligne)
 
-# Suppression des doublons
 tournois_detectes = list(dict.fromkeys(tournois_detectes))
 
 fichier = "tournois.txt"
@@ -84,14 +81,12 @@ for tournoi in tournois_detectes:
 
         nouveaux_tournois.append(tournoi)
 
-# Sauvegarde mémoire
 with open(fichier, "w", encoding="utf-8") as f:
 
     for tournoi in tournois_detectes:
 
         f.write(tournoi + "\n")
 
-# Message Telegram
 if nouveaux_tournois:
 
     message = "🎾 NOUVEAUX TOURNOIS DÉTECTÉS\n\n"
