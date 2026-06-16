@@ -27,7 +27,9 @@ jobs:
           playwright install chromium
 
       - name: Lancer le bot
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python bot.py
+  env:
+    TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+    TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    TENUP_LOGIN: ${{ secrets.TENUP_LOGIN }}
+    TENUP_PASSWORD: ${{ secrets.TENUP_PASSWORD }}
+  run: python bot.py
