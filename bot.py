@@ -1,3 +1,4 @@
+
 from playwright.sync_api import sync_playwright
 import requests
 import os
@@ -11,7 +12,6 @@ mots_interdits = [
     "licence",
     "tutos",
     "championnat",
-    "championnats",
     "chpts",
     "terrain",
     "club",
@@ -27,32 +27,26 @@ with sync_playwright() as p:
 
     page = browser.new_page()
 
-   page.goto(
-    "https://tenup.fft.fr/recherche/tournois",
-    wait_until="networkidle"
-)
+    page.goto(
+        "https://tenup.fft.fr/recherche/tournois?pratique=PADEL",
+        wait_until="networkidle"
+    )
 
-page.wait_for_timeout(10000)
+    page.wait_for_timeout(10000)
 
-print("URL ACTUELLE :", page.url)
+    print("URL ACTUELLE :", page.url)
 
-textes = page.locator("body").inner_text()
+    textes = page.locator("body").inner_text()
 
-print("===== DEBUT CONTENU TENUP =====")
-print(textes[:5000])
-print("===== FIN CONTENU TENUP =====")
-
-git add .
-git commit -m "Ajout debug URL"
-git push origin main
+    print("===== DEBUT CONTENU TENUP =====")
+    print(textes[:5000])
+    print("===== FIN CONTENU TENUP =====")
 
     browser.close()
 
 lignes = textes.split("\n")
 
 for ligne in lignes:
-
-    ligne = ligne.strip()
 
     for mot in mots_cles:
 
@@ -105,14 +99,15 @@ else:
 
     message = "✅ Aucun nouveau tournoi."
 
-telegram_url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-
-requests.post(
-    telegram_url,
-    data={
-        "chat_id": CHAT_ID,
-        "text": message
-    }
+telegram_url = (
+    f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 )
+
+data = {
+    "chat_id": CHAT_ID,
+    "text": message
+}
+
+requests.post(telegram_url, data=data)
 
 print(message)
