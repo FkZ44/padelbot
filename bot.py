@@ -27,18 +27,24 @@ with sync_playwright() as p:
 
     page = browser.new_page()
 
-    page.goto(
-        "https://tenup.fft.fr/recherche/tournois?pratique=PADEL",
-        wait_until="networkidle"
-    )
+   page.goto(
+    "https://tenup.fft.fr/recherche/tournois",
+    wait_until="networkidle"
+)
 
-    page.wait_for_timeout(5000)
+page.wait_for_timeout(10000)
 
-    textes = page.locator("body").inner_text()
+print("URL ACTUELLE :", page.url)
 
-    print("===== DEBUT CONTENU TENUP =====")
-    print(textes[:5000])
-    print("===== FIN CONTENU TENUP =====")
+textes = page.locator("body").inner_text()
+
+print("===== DEBUT CONTENU TENUP =====")
+print(textes[:5000])
+print("===== FIN CONTENU TENUP =====")
+
+git add .
+git commit -m "Ajout debug URL"
+git push origin main
 
     browser.close()
 
