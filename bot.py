@@ -5,6 +5,9 @@ import os
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
+TENUP_LOGIN = os.getenv("TENUP_LOGIN")
+TENUP_PASSWORD = os.getenv("TENUP_PASSWORD")
+
 print("LOGIN =", TENUP_LOGIN)
 print("PASSWORD OK =", TENUP_PASSWORD is not None)
 
